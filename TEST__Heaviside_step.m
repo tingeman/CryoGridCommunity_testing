@@ -57,9 +57,15 @@ classdef TEST__Heaviside_step < TESTCASE
             % Throw an error if the two results are not identical to within 1e-6
             assert(all(all(abs(out.STRATIGRAPHY{self.plot_times(end)}{1}.STATVAR.T - ...
                                T_heaviside(:,length(self.plot_times))) <= 1e-2)))  
+	      
+            max_err = max(abs(out.STRATIGRAPHY{self.plot_times(end)}{1}.STATVAR.T - ...
+                               T_heaviside(:,length(self.plot_times))))
+	      
             disp('=================================================================')
             disp([mfilename ': Test passed.'])
             disp('Calculated results are identical to analytical to within <= 1e-2')
+            disp('')
+            disp(['max error: ' max_err])
             disp('=================================================================')
         end
 
