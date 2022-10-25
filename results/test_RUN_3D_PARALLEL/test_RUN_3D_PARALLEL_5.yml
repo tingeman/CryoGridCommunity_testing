@@ -1,0 +1,13 @@
+STRATIGRAPHY_STATVAR:
+- { name:               STRAT_linear,
+    index:              1,   
+    points:  { # A matrix always has 3 fields: type, names (of columns), values
+               type:    STRAT_MATRIX,    # A STRAT_MATRIX always has depth as the first column!
+               names:    [ depth,         T,  ],
+               values:  [[     0,        10,  ],
+                         [     1,        10,  ],
+                         [     2,        10,  ],
+                         [   100,        10,  ],
+                         [  5000,        10,  ]],
+             },
+  } # end of strat_linear

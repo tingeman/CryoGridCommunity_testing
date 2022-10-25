@@ -1,0 +1,187 @@
+# Lines preceeded by #! are lines that are not allowed in the current excel version
+
+RUN_INFO:
+- { name:                       RUN_1D_STANDARD,
+    index:                      1,
+    tile_class:                 TILE_1D_standard,
+    tile_class_index:           1,
+  } # end of run_info
+
+
+TILE:
+- { name:                       TILE_1D_standard,
+    index:                      1,
+    builder:                    new_init,
+#!    coordinates:                [0.0, 0.0, 0.0],                  # 3 floats identifying X/Y/Z or lat/lon/elev
+#!    crs:                        XYZ,                              # XYZ: cartesian system, epsg code eg. 4326 for lat/lon (WGS84)
+#!    height_system:              none,                             # msl: mean sea level, ell: ellipsoidal height, none: no reference
+    latitude:                   70,                 #[degree]        geographical coordinates
+    longitude:                  10,                 #[degree]            
+    altitude:                   20,                 #[m]            surface elevation a.s.l.
+    domain_depth:               100,                #[m]            vertical extent of the model domain - should match a GRID point
+    area:                       1,                  #[m2]            area of the model realization
+    forcing_class:              FORCING_harmonic_Tair,                
+    forcing_class_index:        1,                        
+    grid_class:                 GRID_user_defined,
+    grid_class_index:           1,         
+    out_class:                  OUT_all_tagged,
+    out_class_index:            1,           
+    strat_classes_class:        STRAT_classes,
+    strat_classes_class_index:  1,           
+    strat_statvar_class:        [STRAT_layers, STRAT_linear],
+    strat_statvar_class_index:  [1, 1],
+    lateral_class:              LATERAL_1D,
+    lateral_class_index:        1,            
+    lateral_IA_classes:         [LAT_REMOVE_SURFACE_WATER],
+    lateral_IA_classes_index:   [1],
+    restart_file_path:          './results/',
+    restart_file_name:          'restart_last_timestep_yml.mat',    
+  } # end of tile   
+# More TILEs can be added by simply listing them below, and assigning a unique index:
+#- { index:                      2
+#    name:                       TILE_1D_standard
+#    coordinates:                [0.0, 0.0, 0.0]                   # 3 floats identifying X/Y/Z or lat/lon/elev
+#    crs:                        XYZ                               # XYZ: cartesian system, epsg code eg. 4326 
+#    ...etc...
+
+
+OUT:
+- { name:               OUT_last_timestep,
+    index:              1,
+    save_timestep:      2,                  # ????
+  } # end of output
+- { name:               OUT_do_nothing,
+    index:              1,
+    display_timestep:   2,                  # [days]
+  } # end of output
+- { name:               OUT_all_tagged,
+    index:              1,
+    output_timestep:    0.25,               # [days]
+    save_date:          01.09.,             # provide in format dd.mm.   date of the year at which the output is written to an output file
+    save_interval:      ,                   # [y] if left empty, the entire output will be written out at the end
+    tag:                yml,                # tag added to run_name before output date
+  } # end of output
+  
+  
+FORCING:
+- { name:               FORCING_harmonic_Tair,
+    index:              1,
+    start_time:         [1980, 08, 01],                   # provide in format [yyyy, mm, dd] format; if left empty ([]), the first timestamp of the forcing data set will be used                                   
+    end_time:           [1981, 07, 31],                   # provide in format [yyyy, mm, dd] format; if left empty ([]), the first timestamp of the forcing data set will be used                                   
+    time_step:          1,                  # [days]      # nominal time step of the generated time series
+
+    maat:               -5,                 # [degC]
+    amplitude:          20,                 # [degC] 
+    lag:                14,                 # [days]      # winter minimum will be "lag" days after 01 January. 
+    period:             ,                   # [days]      # defaults to 365.242 days if not specified
+    gradient:           0,                  # [degC/year]
+    precip:             0,                  # [mm/day]
+    heatFlux_lb:        0.0,                # [W/m2]      # geothermal heat flux
+    airT_height:        2,                  # [m]         # height of air temperature
+  } # end of forcing
+
+                        
+GRID:
+- { name:               GRID_user_defined,
+    index:              1,   
+    grid:    { # A matrix always has 3 fields: type, names (of columns), values
+               type:    V_MATRIX,
+               names:    [ upper,    spacing,    lower ],
+               values:  [[     0,        0.01,    0.03,],
+                         [  0.03,        0.02,    0.07,],
+                         [  0.07,        0.03,     0.1,],
+                         [   0.1,        0.05,       1,],
+                         [     1,        0.10,       2,],
+                         [     2,        0.20,      10,],
+                         [    10,        0.50,      20,],
+                         [    20,        5.00,     100,]],
+             }, 
+  } # end of grid
+
+
+STRATIGRAPHY_CLASSES:
+- { name:               STRAT_classes,
+    index:              1,   
+    classes: { # A matrix always has 3 fields: type, names (of columns), values
+               type:    V_MATRIX,
+               names:    [ depth,  class_name,                      class_index,],
+               values:  [[     0,  GROUND_freeW_ubtf,                         1,]],
+             },
+    snow_class_name:           SNOW_crocus_bucketW_seb,
+    snow_class_index:          1,
+    sleeping_classes_name:     [GROUND_freeW_ubtf],
+    sleeping_classes_index:    [1,],
+  } # end of strat_classes
+
+
+STRATIGRAPHY_STATVAR:
+- { name:               STRAT_layers,
+    index:              1,   
+    layers:  { # A matrix always has 3 fields: type, names (of columns), values
+               type:    V_MATRIX,
+               names:    [ depth,  waterIce,  mineral,    organic,],
+               values:  [[   0  ,      0.30,     0.50,          0,],
+                         [   0.5,      0.50,     0.50,          0,],
+                         [   5  ,      0.03,     0.97,          0,]],
+             },
+  } # end of strat_layers
+- { name:               STRAT_linear,
+    index:              1,   
+    points:  { # A matrix always has 3 fields: type, names (of columns), values
+               type:    V_MATRIX,
+               names:    [ depth,         T,  ],
+               values:  [[     0,         5,  ],
+                         [     1,        -1,  ],
+                         [     2,        -5,  ],
+                         [   100,        -1,  ],
+                         [  5000,        20,  ]],
+             },
+  } # end of strat_linear
+
+
+SUBSURFACE_CLASS:
+# NEW CLASS
+- { name:                   GROUND_freeW_ubtf,
+    index:                  1,
+    
+    dt_max:                 3600,           #{default: 3600,  unit: '[sec]'},   # longest possible timestep
+    dE_max:                 25000,          #{default: 50000, unit: '[J/m3]'},  # maximum change of energy per timestep
+  } # end of class
+  
+# NEW CLASS
+- { name:                   SNOW_crocus_bucketW_seb,
+    index:                  1,
+    
+    slope:                  0,              #{default: ,      unit: },       
+    SW_spectral_range1:     0.71,           #{default: ,      unit: },       
+    SW_spectral_range2:     0.21,           #{default: ,      unit: },       
+    epsilon:                0.99,           #{default: 0.99,  unit: '[-]'},     # surface emissivity
+    z0:                     0.001,          #{default: 0.001, unit: [m]},       # roughness length
+    rs:                     0,
+    timescale_winddrift:    48,             #{default: ,      unit: [hours]},   
+    field_capacity:         0.05,          
+    hydraulicConductivity:  0.0001,
+    swe_per_cell:           0.02,
+
+    dt_max:                 3600,           #{default: 3600,  unit: '[sec]'},   # longest possible timestep
+    dE_max:                 50000,          #{default: 50000, unit: [J/m3]},    # maximum change of energy per timestep
+  } # end of class
+  
+
+LATERAL_CLASS:
+# NEW CLASS
+- { name:                       LATERAL_1D,
+    index:                      1,    
+                               
+    ia_time_increment:          0.25,            # [day]    
+  } # end of class  
+# END OF LATERAL_CLASS DEFINITION    
+ 
+ 
+LATERAL_IA_CLASS:
+# NEW CLASS
+- { name:                       LAT_REMOVE_SURFACE_WATER,
+    index:                      1,    
+    # NO_PARAMETERS_REQUIRED
+  } # end of class   
+# END OF LATERAL_IA_CLASS DEFINITION

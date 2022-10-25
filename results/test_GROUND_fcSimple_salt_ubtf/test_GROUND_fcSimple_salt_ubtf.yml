@@ -1,0 +1,192 @@
+# Lines preceeded by #! are lines that are not allowed in the current excel version
+
+RUN_INFO:
+- { name:                       RUN_1D_STANDARD,
+    index:                      1,
+    tile_class:                 TILE_1D_standard,
+    tile_class_index:           1,
+  } # end of run_info
+
+
+TILE:
+- { name:                       TILE_1D_standard,
+    index:                      1,
+    builder:                    new_init,
+#!    coordinates:                [0.0, 0.0, 0.0],                  # 3 floats identifying X/Y/Z or lat/lon/elev
+#!    crs:                        XYZ,                              # XYZ: cartesian system, epsg code eg. 4326 for lat/lon (WGS84)
+#!    height_system:              none,                             # msl: mean sea level, ell: ellipsoidal height, none: no reference
+    latitude:                   70,                 #[degree]        geographical coordinates
+    longitude:                  10,                 #[degree]            
+    altitude:                   400,                #[m]            surface elevation a.s.l.
+    domain_depth:               100,                #[m]            vertical extent of the model domain - should match a GRID point
+    area:                       1,                  #[m2]            area of the model realization
+    forcing_class:              FORCING_tair_precip,                
+    forcing_class_index:        1,                        
+    grid_class:                 GRID_user_defined,
+    grid_class_index:           1,         
+    out_class:                  OUT_all_tagged,
+    out_class_index:            1,           
+    strat_classes_class:        STRAT_classes,
+    strat_classes_class_index:  1,           
+    strat_statvar_class:        [STRAT_layers, STRAT_linear],
+    strat_statvar_class_index:  [1, 1],
+    lateral_class:              LATERAL_1D,
+    lateral_class_index:        1,            
+    lateral_IA_classes:         [],
+    lateral_IA_classes_index:   [],
+    restart_file_path:          './results/',
+    restart_file_name:          'restart_last_timestep_yml.mat',    
+  } # end of tile   
+# More TILEs can be added by simply listing them below, and assigning a unique index:
+#- { index:                      2
+#    name:                       TILE_1D_standard
+#    coordinates:                [0.0, 0.0, 0.0]                   # 3 floats identifying X/Y/Z or lat/lon/elev
+#    crs:                        XYZ                               # XYZ: cartesian system, epsg code eg. 4326 
+#    ...etc...
+
+
+OUT:
+- { name:               OUT_all_tagged,
+    index:              1,
+    output_timestep:    0.25,               # [days]
+    save_date:          02.08.,             # provide in format dd.mm.   date of the year at which the output is written to an output file
+    save_interval:      1,                  # [y] if left empty, the entire output will be written out at the end
+    tag:                yml,                # tag added to run_name before output date
+  } # end of output
+  
+  
+FORCING:
+- { name:               FORCING_tair_precip,
+    index:              1,
+    filename:           CG_Beaufort_81_880_short_crop_1yr.mat,
+    forcing_path:       './forcing/',    
+#    start_time:         01.07.1980,                       # provide in format dd.mm.yyyy (????); if left empty, the first timestamp of the forcing data set will be used                                   
+#    end_time:           30.06.1985,                       # provide in format dd.mm.yyyy; if left empty, the last timestamp of the forcing data set will be used                                   
+    start_time:         [1980, 08, 01],                   # provide in format [yyyy, mm, dd] format; if left empty ([]), the first timestamp of the forcing data set will be used                                   
+    end_time:           [],                               # provide in format [yyyy, mm, dd] format; if left empty ([]), the first timestamp of the forcing data set will be used                                   
+
+    rain_fraction:      1,                  # [-]         # rainfall in forcing file multiplied by this number
+    snow_fraction:      1,                  # [-]         # snowfall in forcing file multiplied by this number
+    heatFlux_lb:        0.05,               # [W/m2]      # geothermal heat flux
+    airT_height:        2,                  # [m]         # height of air temperature
+  } # end of forcing
+
+                        
+GRID:
+- { name:               GRID_user_defined,
+    index:              1,   
+    grid:    { # A matrix always has 3 fields: type, names (of columns), values
+               type:    V_MATRIX,
+               names:    [ upper,    spacing,    lower ],
+               values:  [[     0,        0.05,       2,],
+                         [     2,        0.10,      10,],
+                         [    10,        0.50,      30,],
+                         [    30,        1.00,      50,],
+                         [    50,        5.00,     100,],
+                         [   100,       10.00,     150,],
+                         [   150,       50.00,     500,],
+                         [   500,      100.00,    1000,]],
+             }, 
+  } # end of grid
+
+
+STRATIGRAPHY_CLASSES:
+- { name:               STRAT_classes,
+    index:              1,   
+    classes: { # A matrix always has 3 fields: type, names (of columns), values
+               type:    V_MATRIX,
+               names:    [ depth,  class_name,                      class_index,],
+               values:  [[     0,  GROUND_fcSimple_salt_ubtf,                 1,],
+                         [    10,  GROUND_freeW_ubtf,                         1,]],
+             },
+    snow_class_name:           ,
+    snow_class_index:          ,
+    sleeping_classes_name:     [GROUND_fcSimple_salt_ubtf],
+    sleeping_classes_index:    [1],
+  } # end of strat_classes
+
+
+STRATIGRAPHY_STATVAR:
+- { name:               STRAT_layers,
+    index:              1,   
+    layers:  { # A matrix always has 3 fields: type, names (of columns), values
+               type:    V_MATRIX,
+               names:    [ depth,  waterIce,  mineral,    organic,    Xice,    saltConc,    deltaT,],
+               values:  [[     0,      0.50,     0.50,          0,       0,         600,         0,],
+                         [    10,      0.03,     0.97,          0,       0,           0,         1,]],
+             },
+  } # end of strat_layers
+- { name:               STRAT_linear,
+    index:              1,   
+    points:  { # A matrix always has 3 fields: type, names (of columns), values
+               type:    V_MATRIX,
+               names:    [ depth,         T,   ],
+               values:  [[     0,         2,   ],
+                         [     1,         2.02,],
+                         [    10,         2.2, ],
+                         [   100,         3.7, ],
+                         [  5000,        85.3, ]],
+             },
+  } # end of strat_linear
+
+
+SUBSURFACE_CLASS:
+# NEW CLASS
+- { name:                   GROUND_freeW_ubtf_snow,
+    index:                  1,
+    
+    dt_max:                 3600,           #{default: 3600,  unit: '[sec]'},   # longest possible timestep
+    dE_max:                 50000,          #{default: 50000, unit: [J/m3]},    # maximum change of energy per timestep
+  } # end of class
+
+# NEW CLASS
+- { name:                   GROUND_freeW_ubtf,
+    index:                  1,
+
+    dt_max:                 3600,           #{default: 3600,  unit: '[sec]'},   # longest possible timestep
+    dE_max:                 50000,          #{default: 50000, unit: [J/m3]},    # maximum change of energy per timestep
+  } # end of class
+
+# NEW CLASS
+- { name:                   GROUND_fcSimple_salt_ubtf,
+    index:                  1,
+
+    #albedo:                 0.15,           #{default: 0,15,  unit: '[-]'},     # surface albedo       
+    #epsilon:                0.99,           #{default: 0.99,  unit: '[-]'},     # surface emissivity
+    #z0:                     0.001,          #{default: 0.001, unit: [m]},       # roughness length
+    #rs:                     100,            #{default: 100,   unit: [-]},       # surface resistance against evapotranspiration
+    tortuosity:             1.5,
+
+    dt_max:                 3600,           #{default: 3600,  unit: '[sec]'},   # longest possible timestep
+    dE_max:                 50000,          #{default: 50000, unit: '[J/m3]'},  # maximum change of energy per timestep
+  } # end of class
+
+# NEW CLASS
+- { name:                   SNOW_simple_ubtf_mf,
+    index:                  1,
+    
+    density:                300,            #{default: 350,   unit: [kg/m3]},   # snow density   
+    melt_threshold:         0,              #
+    dt_max:                 3600,           #{default: 3600,  unit: [sec]},     # longest possible timestep
+    dE_max:                 50000,          #{default: 50000, unit: [J/m3]},    # maximum change of energy per timestep
+    swe_per_cell:           0.01,           #{default: 0.01,  unit: [m]},       # target SWE regulating grid cell size, 0.01m is ca. 3cm 
+
+  } # end of class
+
+LATERAL_CLASS:
+# NEW CLASS
+- { name:                       LATERAL_1D,
+    index:                      1,    
+                               
+    ia_time_increment:          0.25,            # [day]    
+  } # end of class  
+# END OF LATERAL_CLASS DEFINITION    
+ 
+ 
+LATERAL_IA_CLASS:
+# NEW CLASS
+- { name:                       LAT_REMOVE_SURFACE_WATER,
+    index:                      1,    
+    # NO_PARAMETERS_REQUIRED
+  } # end of class   
+# END OF LATERAL_IA_CLASS DEFINITION
