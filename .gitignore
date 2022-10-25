@@ -37,5 +37,8 @@ octave-workspace
 # Simulink autosave extension
 .autosave
 
+# Excel lock files
+~$*
+
 # image files
 *.png
