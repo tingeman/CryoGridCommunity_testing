@@ -1,14 +1,20 @@
 %========================================================================
 % Test CryoGrid calculate thaw front depth against Nixon solution.
+% 
+% Citation for analytical formulations:
+% Nixon, J. and McRoberts, E. C.: A study of some factors affecting the 
+% thawing of frozen soils, Canadian Geotechnical Journal, 10, 439–452,
+% https://doi.org/10.1139/t73-037, 1973.
+%
 % T. Ingeman-Nielsen, Dec 2021
 %========================================================================
 
-classdef TEST__Nixon_solution_5C < TESTCASE
+classdef TEST__Nixon_solution_1C < TESTCASE
     
     properties
         run_flag = true;     % Set this to false to skip the step that runs the model
         result_path = './results/';   % with trailing backslash
-        run_name = 'test_Nixon_solution_5C';       % parameter file name and result directory 
+        run_name = 'test_Nixon_solution_1C';       % parameter file name and result directory 
         run_modes = {'yml'};   % list the run modes to include ('xls' and/or 'yml')
         plot_times
     end
@@ -223,6 +229,9 @@ classdef TEST__Nixon_solution_5C < TESTCASE
                 out = self.xls_out.out;
             end
 
+            disp('NB: The paper uses a plot with 0.01 m node spacing.')
+            disp('Current settings are 0.1 m node spacing to speed up calculations.')
+
             depths = cumsum(out.STRATIGRAPHY{1}{1}.STATVAR.layerThick) - out.STRATIGRAPHY{1}{1}.STATVAR.layerThick(1)/2;
             t = out.TIMESTAMP-out.TIMESTAMP(1);
 
@@ -250,6 +259,48 @@ classdef TEST__Nixon_solution_5C < TESTCASE
             ylabel('Thaw depth [m]', 'Interpreter', 'none') 
             xlabel('Time [days]', 'Interpreter', 'none') 
             legend([h1, h2, h3, h4], {'Numerical', 'Analytical (eq7)', 'Analytical (eq8)', 'Analytical (eq10)'}, 'Location', 'northeast')
+
+            exportgraphics(gcf,[self.run_name '.png'],'Resolution',300)
+        end
+
+        function plot_for_paper(self)
+            if any(strcmpi('yml', self.run_modes))
+                out = self.yml_out.out;
+            elseif any(strcmpi('xls', self.run_modes))
+                out = self.xls_out.out;
+            end
+            
+            disp('NB: The paper uses a plot with 0.01 m node spacing.')
+            disp('Current settings are 0.1 m node spacing to speed up calculations.')
+
+            depths = cumsum(out.STRATIGRAPHY{1}{1}.STATVAR.layerThick) - out.STRATIGRAPHY{1}{1}.STATVAR.layerThick(1)/2;
+            t = out.TIMESTAMP-out.TIMESTAMP(1);
+
+            use_cg_fix = true;
+            td = self.get_cg_thawdepth(use_cg_fix);
+            
+            [alpha_eq7, alpha_eq8, alpha_eq10] = self.get_Nixon_solution();
+
+            figure
+
+            plot(out.STRATIGRAPHY{end}{1}.STATVAR.T, depths, '.-k')
+            set(gca, 'YDir','reverse')
+            ylabel('Depth [m]', 'Interpreter', 'none') 
+            xlabel('Temperature [degC]', 'Interpreter', 'none') 
+            ylim([0,20])
+
+            figure
+
+            h1 = plot(t, td, '-k', 'LineWidth', 1);
+            hold on
+            %h2 = plot(t, alpha_eq7*sqrt(t*24*3600), '-r', 'LineWidth', 1);
+            %h3 = plot(t, alpha_eq8*sqrt(t*24*3600), '--r', 'LineWidth', 1);
+            h4 = plot(t, alpha_eq10*sqrt(t*24*3600), '--r', 'LineWidth', 1);
+            set(gca, 'YDir','reverse')
+            ylabel('Thaw depth [m]', 'Interpreter', 'none') 
+            xlabel('Time [days]', 'Interpreter', 'none') 
+            %legend([h1, h2, h3, h4], {'Numerical', 'Analytical (eq7)', 'Analytical (eq8)', 'Analytical (eq10)'}, 'Location', 'northeast')
+            legend([h1, h4], {'Numerical', 'Analytical'}, 'Location', 'northeast')
 
             exportgraphics(gcf,[self.run_name '.png'],'Resolution',300)
         end
