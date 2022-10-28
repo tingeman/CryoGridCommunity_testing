@@ -23,7 +23,7 @@ TILE:
     altitude:                   20,                 #[m]            surface elevation a.s.l.
     domain_depth:               100,                #[m]            vertical extent of the model domain - should match a GRID point
     area:                       1,                  #[m2]            area of the model realization
-    forcing_class:              FORCING_seb,                
+    forcing_class:              FORCING_seb_old,                
     forcing_class_index:        1,                        
     grid_class:                 GRID_user_defined,
     grid_class_index:           1,         
@@ -84,7 +84,7 @@ OUT:
 FORCING:
 # NEW CLASS 
 - { index:                      1,
-    name:                       FORCING_seb,
+    name:                       FORCING_seb_old,
     filename:                   CG_Beaufort_81_880_short_crop_1yr.mat,
     forcing_path:               './forcing/',
 #    start_time:                 01.07.1980,                       # provide in format dd.mm.yyyy (????); if left empty, the first timestamp of the forcing data set will be used                                   

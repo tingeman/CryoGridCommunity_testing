@@ -20,7 +20,7 @@ TILE:
     altitude:                   20,                 #[m]            surface elevation a.s.l.
     domain_depth:               1,                  #[m]            vertical extent of the model domain - should match a GRID point
     area:                       1,                  #[m2]            area of the model realization
-    forcing_class:              FORCING_Tair_Tlb_fixed,                
+    forcing_class:              FORCING_Tair_Tlb_fixed_mat,                
     forcing_class_index:        1,                        
     grid_class:                 GRID_user_defined,
     grid_class_index:           1,         
@@ -57,7 +57,7 @@ OUT:
   
   
 FORCING:
-- { name:               FORCING_Tair_Tlb_fixed,
+- { name:               FORCING_Tair_Tlb_fixed_mat,
     index:              1,
     filename:           Constant_Tair=10C.mat,
     forcing_path:       './forcing/',    

@@ -20,7 +20,7 @@ TILE:
     altitude:                   20,                 #[m]            surface elevation a.s.l.
     domain_depth:               100,                #[m]            vertical extent of the model domain - should match a GRID point
     area:                       1,                  #[m2]            area of the model realization
-    forcing_class:              FORCING_ubT_lbT_fixed,                
+    forcing_class:              FORCING_ubT_lbT_fixed_old,                
     forcing_class_index:        1,                        
     grid_class:                 GRID_user_defined,
     grid_class_index:           1,         
@@ -57,7 +57,7 @@ OUT:
   
   
 FORCING:
-- { name:               FORCING_ubT_lbT_fixed,
+- { name:               FORCING_ubT_lbT_fixed_old,
     index:              1,
     start_time:         [2021, 01, 01],                   # provide in format [yyyy, mm, dd] format; if left empty ([]), the first timestamp of the forcing data set will be used                                   
     end_time:           [2026, 01, 01],                   # provide in format [yyyy, mm, dd] format; if left empty ([]), the first timestamp of the forcing data set will be used                                   

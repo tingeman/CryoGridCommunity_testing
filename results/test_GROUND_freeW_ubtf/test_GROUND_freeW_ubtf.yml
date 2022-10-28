@@ -20,7 +20,7 @@ TILE:
     altitude:                   20,                 #[m]            surface elevation a.s.l.
     domain_depth:               100,                #[m]            vertical extent of the model domain - should match a GRID point
     area:                       1,                  #[m2]            area of the model realization
-    forcing_class:              FORCING_tair_precip,                
+    forcing_class:              FORCING_tair_precip_old,                
     forcing_class_index:        1,                        
     grid_class:                 GRID_user_defined,
     grid_class_index:           1,         
@@ -64,7 +64,7 @@ OUT:
   
   
 FORCING:
-- { name:               FORCING_tair_precip,
+- { name:               FORCING_tair_precip_old,
     index:              1,
     filename:           CG_Beaufort_81_880_short_crop_1yr.mat,
     forcing_path:       './forcing/',    
@@ -101,7 +101,7 @@ STRATIGRAPHY_CLASSES:
                names:    [ depth,  class_name,                      class_index,],
                values:  [[     0,  GROUND_freeW_ubtf,                         1,]],
              },
-    snow_class_name:           SNOW_crocus_bucketW_seb,
+    snow_class_name:           SNOW_simple_ubtf_mf,
     snow_class_index:          1,
     sleeping_classes_name:     [GROUND_freeW_ubtf],
     sleeping_classes_index:    [1,],
@@ -143,7 +143,7 @@ SUBSURFACE_CLASS:
   } # end of class
   
 # NEW CLASS
-- { name:                   SNOW_crocus_bucketW_seb,
+- { name:                   SNOW_simple_ubtf_mf,
     index:                  1,
     
     slope:                  0,              #{default: ,      unit: },       

@@ -107,7 +107,7 @@ STRATIGRAPHY_CLASSES:
                names:    [ depth,  class_name,                      class_index,],
                values:  [[     0,  GROUND_freeW_ubtf,                         1,]],
              },
-    snow_class_name:           SNOW_crocus_bucketW_seb,
+    snow_class_name:           SNOW_simple_ubtf_mf,
     snow_class_index:          1,
     sleeping_classes_name:     [GROUND_freeW_ubtf],
     sleeping_classes_index:    [1,],
@@ -149,19 +149,22 @@ SUBSURFACE_CLASS:
   } # end of class
   
 # NEW CLASS
-- { name:                   SNOW_crocus_bucketW_seb,
+- { name:                   SNOW_simple_ubtf_mf,
     index:                  1,
     
-    slope:                  0,              #{default: ,      unit: },       
-    SW_spectral_range1:     0.71,           #{default: ,      unit: },       
-    SW_spectral_range2:     0.21,           #{default: ,      unit: },       
-    epsilon:                0.99,           #{default: 0.99,  unit: '[-]'},     # surface emissivity
-    z0:                     0.001,          #{default: 0.001, unit: [m]},       # roughness length
-    rs:                     0,
-    timescale_winddrift:    48,             #{default: ,      unit: [hours]},   
-    field_capacity:         0.05,          
-    hydraulicConductivity:  0.0001,
+#    slope:                  0,              #{default: ,      unit: },       
+#    SW_spectral_range1:     0.71,           #{default: ,      unit: },       
+#    SW_spectral_range2:     0.21,           #{default: ,      unit: },       
+#    epsilon:                0.99,           #{default: 0.99,  unit: '[-]'},     # surface emissivity
+#    z0:                     0.001,          #{default: 0.001, unit: [m]},       # roughness length
+#    rs:                     0,
+#    timescale_winddrift:    48,             #{default: ,      unit: [hours]},   
+#    field_capacity:         0.05,          
+#    hydraulicConductivity:  0.0001,
+#    swe_per_cell:           0.02,
+    density:                300,             # initial snow density [kg/m3]
     swe_per_cell:           0.02,
+    melt_threshold:         0,               # threshold air temperature for snow melt to occur [degC]
 
     dt_max:                 3600,           #{default: 3600,  unit: '[sec]'},   # longest possible timestep
     dE_max:                 50000,          #{default: 50000, unit: [J/m3]},    # maximum change of energy per timestep
